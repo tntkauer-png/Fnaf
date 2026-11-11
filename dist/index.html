@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#090807" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23140f0a'/%3E%3Ccircle cx='32' cy='28' r='14' fill='%23c8a04a'/%3E%3Ccircle cx='26' cy='26' r='3' fill='%23140f0a'/%3E%3Ccircle cx='38' cy='26' r='3' fill='%23140f0a'/%3E%3Cpath d='M22 36h20l-4 8H26z' fill='%23140f0a'/%3E%3C/svg%3E" />
+  <meta name="description" content="A fan-made 3D mobile survival horror experience. Survive six nights at Freddy Fazbear's Pizza." />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Five Nights at Freddy's — Night Shift</title>
+  <script type="module" crossorigin src="./assets/index-Bhotw7P4.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-DpIHFlj9.css">
+</head>
+<body>
+  <main id="app">
+    <div id="game-shell">
+      <canvas id="game-canvas" aria-label="Security office 3D view"></canvas>
+    </div>
+
+    <div class="screen-fx" aria-hidden="true">
+      <div class="vignette"></div>
+      <div class="grain"></div>
+      <div class="letterbox top"></div>
+      <div class="letterbox bottom"></div>
+    </div>
+
+    <div id="boot" class="boot-screen">
+      <div class="boot-mark">
+        <span class="boot-star">★</span>
+        <span>FREDDY FAZBEAR'S</span>
+      </div>
+      <div class="boot-loader"><i></i></div>
+      <div class="boot-copy">WAKING THE ANIMATRONICS…</div>
+    </div>
+
+    <!-- ============================== MENU ============================== -->
+    <section id="menu" class="menu hidden" aria-label="Main menu">
+      <div class="menu-shade"></div>
+      <header class="menu-top">
+        <div class="est">EST. 1987 <span>•</span> FAZBEAR ENTERTAINMENT</div>
+        <button id="settingsBtn" class="icon-btn" aria-label="Settings" title="Settings">⚙</button>
+      </header>
+
+      <div class="title-lockup">
+        <p class="title-kicker">FIVE NIGHTS AT</p>
+        <h1><span class="title-freddy">FREDDY'S</span></h1>
+        <div class="title-rule"><span></span><b>NIGHT SHIFT</b><span></span></div>
+        <p class="title-sub">A 3D SECURITY HORROR EXPERIENCE</p>
+      </div>
+
+      <div class="menu-bottom">
+        <div class="night-chip" id="nightChip">
+          <span class="chip-label">CURRENT SHIFT</span>
+          <strong id="menuNight">NIGHT 01</strong>
+          <span class="chip-sub" id="menuNightSub">12 AM — 6 AM</span>
+        </div>
+        <div class="menu-actions">
+          <button id="startBtn" class="start-btn" aria-label="Start">
+            <span class="start-label">START</span>
+            <span class="start-sub" id="startSub">BEGIN YOUR SHIFT</span>
+            <span class="start-arrow">›</span>
+          </button>
+          <div class="menu-secondary">
+            <button id="nightsBtn" class="ghost-btn">NIGHTS</button>
+            <button id="howBtn" class="ghost-btn">HOW TO PLAY</button>
+          </div>
+        </div>
+        <p class="headphones">◉ HEADPHONES RECOMMENDED <span>·</span> TOUCH / MOUSE / KEYS</p>
+      </div>
+      <div class="menu-footer">FAN-MADE TRIBUTE · NOT AFFILIATED WITH SCOTT CAWTHON</div>
+    </section>
+
+    <!-- ============================== HUD ============================== -->
+    <section id="hud" class="hud hidden" aria-label="Night guard controls">
+      <div class="hud-grain" aria-hidden="true"></div>
+      <header class="hud-top">
+        <div class="shift-box">
+          <span class="hud-eyebrow">SHIFT</span>
+          <strong id="hudNight">NIGHT 01</strong>
+          <span id="hudHour">12 AM</span>
+        </div>
+        <div class="clock-box">
+          <span id="clock">12</span><span class="clock-am">AM</span>
+          <div class="clock-progress"><i id="clockFill"></i></div>
+        </div>
+        <div class="power-box">
+          <div class="power-line"><span class="hud-eyebrow">POWER</span><strong id="powerPct">100%</strong></div>
+          <div class="power-bar"><i id="powerFill"></i></div>
+          <div class="usage-line">
+            <span>USAGE</span>
+            <div class="usage-bars" id="usageBars">
+              <i></i><i></i><i></i><i></i><i></i>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="edge-indicator left" id="leftIndicator"><span>!</span><em>WEST</em></div>
+      <div class="edge-indicator right" id="rightIndicator"><span>!</span><em>EAST</em></div>
+
+      <div class="look-zone" id="lookZone">
+        <div class="look-hint" id="lookHint"><span>↔</span> DRAG TO LOOK</div>
+      </div>
+
+      <div class="controls-left control-cluster">
+        <button class="control light-control" id="leftLightBtn" aria-label="West hall light" aria-pressed="false">
+          <span class="control-key">L</span><span class="control-label">LIGHT</span><i class="control-dot"></i>
+        </button>
+        <button class="control door-control" id="leftDoorBtn" aria-label="West door" aria-pressed="false">
+          <span class="control-key">DOOR</span><span class="control-label">WEST</span><i class="control-dot"></i>
+        </button>
+      </div>
+
+      <div class="controls-right control-cluster">
+        <button class="control light-control" id="rightLightBtn" aria-label="East hall light" aria-pressed="false">
+          <span class="control-key">R</span><span class="control-label">LIGHT</span><i class="control-dot"></i>
+        </button>
+        <button class="control door-control" id="rightDoorBtn" aria-label="East door" aria-pressed="false">
+          <span class="control-key">DOOR</span><span class="control-label">EAST</span><i class="control-dot"></i>
+        </button>
+      </div>
+
+      <button id="camBtn" class="camera-btn" aria-label="Open security cameras">
+        <span class="camera-icon"><i></i></span>
+        <span>CAMERAS</span>
+        <kbd>C</kbd>
+      </button>
+
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+      <div id="doorAlert" class="door-alert" aria-hidden="true">
+        <span class="pulse-ring"></span><b>!</b>
+      </div>
+
+      <div class="hud-bottom">
+        <span id="threatHint" class="threat-hint">THE HALLS ARE QUIET.</span>
+        <span class="hud-tip">STAY AWAKE</span>
+      </div>
+    </section>
+
+    <!-- ============================== CAMERA TABLET ============================== -->
+    <section id="tablet" class="tablet hidden" aria-label="Security camera system">
+      <div class="tablet-chrome">
+        <div class="tablet-top">
+          <div class="tablet-brand">
+            <span class="fazbear-dot"></span>
+            <div><strong>FAZBEAR</strong><small>SECURITY SYSTEM</small></div>
+          </div>
+          <div class="cam-title"><span id="camName">CAM 01</span><strong id="camLabel">SHOW STAGE</strong></div>
+          <button id="camExit" class="tablet-exit" aria-label="Close cameras">EXIT <span>✕</span></button>
+        </div>
+
+        <div class="cam-viewport" id="camViewport">
+          <div class="camera-overlay">
+            <div class="cam-corners"><i></i><i></i><i></i><i></i></div>
+            <div class="cam-rec"><span></span> REC</div>
+            <div class="cam-time" id="camTime">01:24:16</div>
+            <div class="cam-channel" id="camChannel">CH 01</div>
+            <div class="scanlines"></div>
+            <div class="cam-noise"></div>
+            <div class="cam-flicker"></div>
+          </div>
+          <div class="cam-warning" id="camWarning">SIGNAL INTERFERENCE</div>
+        </div>
+
+        <div class="tablet-foot">
+          <div class="power-mini">
+            <span>POWER</span>
+            <strong id="camPower">100%</strong>
+            <div class="mini-bar"><i id="camPowerFill"></i></div>
+          </div>
+          <div class="cam-map" id="camMap" role="tablist" aria-label="Camera channels">
+            <button class="cam-map-btn active" data-cam="1" role="tab" aria-selected="true"><b>01</b><span>SHOW STAGE</span></button>
+            <button class="cam-map-btn" data-cam="2" role="tab" aria-selected="false"><b>02</b><span>DINING</span></button>
+            <button class="cam-map-btn" data-cam="3" role="tab" aria-selected="false"><b>03</b><span>WEST HALL</span></button>
+            <button class="cam-map-btn" data-cam="4" role="tab" aria-selected="false"><b>04</b><span>EAST HALL</span></button>
+            <button class="cam-map-btn" data-cam="5" role="tab" aria-selected="false"><b>05</b><span>PIRATE COVE</span></button>
+          </div>
+          <div class="tablet-hint">SWIPE FEED TO CYCLE · TAP CHANNEL TO VIEW</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================== BRIEFING ============================== -->
+    <section id="briefing" class="briefing hidden" aria-label="Night briefing">
+      <div class="briefing-inner">
+        <p class="brief-kicker">FREDDY FAZBEAR'S PIZZA</p>
+        <h2 id="briefNight">NIGHT 01</h2>
+        <div class="brief-line"></div>
+        <p class="brief-time" id="briefTime">12:00 AM</p>
+        <p class="brief-copy" id="briefCopy">The doors are yours. Keep the animatronics out until 6 AM.</p>
+        <div class="brief-tip" id="briefTip">TIP: Drag the screen to look at both doors.</div>
+      </div>
+    </section>
+
+    <!-- ============================== FOXY WARNING ============================== -->
+    <div id="foxyWarning" class="foxy-warning" aria-hidden="true">
+      <span>RUN.</span>
+      <small>WEST HALL BREACH — SEAL THE DOOR</small>
+    </div>
+
+    <!-- ============================== POWER OUT ============================== -->
+    <div id="powerOut" class="power-out" aria-hidden="true">
+      <div class="power-out-copy">
+        <span>POWER</span>
+        <strong>OFFLINE</strong>
+        <small>He is coming.</small>
+      </div>
+      <div class="power-out-eyes"><i></i><i></i></div>
+    </div>
+
+    <!-- ============================== JUMPSCARE ============================== -->
+    <div id="scareFx" class="scare-fx" aria-hidden="true">
+      <div class="scare-static"></div>
+      <div class="scare-title">DON'T LOOK AWAY</div>
+    </div>
+
+    <!-- ============================== GAME OVER ============================== -->
+    <section id="gameOver" class="end-screen gameover hidden" aria-label="Game over">
+      <div class="end-static"></div>
+      <div class="end-inner">
+        <p class="end-kicker">SHIFT TERMINATED</p>
+        <h2>GAME OVER</h2>
+        <p class="end-copy" id="deathCopy">Something found its way into the office.</p>
+        <div class="end-stats" id="endStats"></div>
+        <div class="end-actions">
+          <button id="retryBtn" class="primary-btn">RETRY NIGHT</button>
+          <button id="quitBtn" class="ghost-btn">MAIN MENU</button>
+        </div>
+        <p class="end-tip">TIP: <span id="deathTip">Use the hall lights. You do not have to open the doors.</span></p>
+      </div>
+    </section>
+
+    <!-- ============================== WIN ============================== -->
+    <section id="winScreen" class="end-screen win hidden" aria-label="Shift complete">
+      <div class="win-rays"></div>
+      <div class="end-inner">
+        <p class="end-kicker" id="winKicker">6:00 AM</p>
+        <h2 id="winTitle">SHIFT COMPLETE</h2>
+        <p class="end-copy" id="winCopy">You made it through the night.</p>
+        <div class="paycheck">
+          <div class="check-top"><span>FAZBEAR ENTERTAINMENT</span><b>PAYCHECK</b></div>
+          <div class="check-row"><span>NIGHT GUARD — NIGHT <b id="checkNight">01</b></span><strong id="checkAmount">$120.50</strong></div>
+          <div class="check-line"></div>
+          <small>“You survived. See you tomorrow.”</small>
+        </div>
+        <div class="end-actions">
+          <button id="nextBtn" class="primary-btn">NEXT NIGHT</button>
+          <button id="winMenuBtn" class="ghost-btn">MAIN MENU</button>
+        </div>
+        <p class="end-tip" id="winTip">Foxy watches the cove. Check CAM 05 before he runs.</p>
+      </div>
+    </section>
+
+    <!-- ============================== MODALS ============================== -->
+    <section id="nightSelect" class="modal hidden" aria-label="Select a night">
+      <div class="modal-card night-card">
+        <button class="modal-close" data-close="nightSelect" aria-label="Close">✕</button>
+        <p class="modal-kicker">SHIFT ROSTER</p>
+        <h2>CHOOSE A NIGHT</h2>
+        <div class="night-grid" id="nightGrid"></div>
+        <p class="modal-note">Unlock each night by surviving the one before it.</p>
+        <button id="nightPlayBtn" class="primary-btn">PLAY NIGHT 1</button>
+      </div>
+    </section>
+
+    <section id="howModal" class="modal hidden" aria-label="How to play">
+      <div class="modal-card help-card">
+        <button class="modal-close" data-close="howModal" aria-label="Close">✕</button>
+        <p class="modal-kicker">EMPLOYEE HANDBOOK</p>
+        <h2>SURVIVE UNTIL 6 AM</h2>
+        <div class="help-grid">
+          <article><span class="help-icon">↔</span><h3>LOOK AROUND</h3><p>Drag anywhere on the office view. Swipe toward the west or east doorway to see who is standing there.</p></article>
+          <article><span class="help-icon">◉</span><h3>CHECK THE HALLS</h3><p>Tap LIGHT to illuminate a doorway. Glowing eyes in the dark are a warning, not a decoration.</p></article>
+          <article><span class="help-icon">▣</span><h3>SEAL THE DOOR</h3><p>Tap DOOR to drop the steel shutter. A sealed door drains power fast. Open it once the hall is clear.</p></article>
+          <article><span class="help-icon">▤</span><h3>WATCH CAMERAS</h3><p>Open the tablet to track Freddy’s band. CAM 05 keeps Foxy behind his curtain. The feed also costs power.</p></article>
+        </div>
+        <div class="help-foot"><span>POWER RUNS OUT AT 0%.</span><span>SO DOES YOUR LUCK.</span></div>
+        <button class="primary-btn" data-close="howModal">GOT IT</button>
+      </div>
+    </section>
+
+    <section id="settingsModal" class="modal hidden" aria-label="Settings">
+      <div class="modal-card settings-card">
+        <button class="modal-close" data-close="settingsModal" aria-label="Close">✕</button>
+        <p class="modal-kicker">SYSTEM</p>
+        <h2>SETTINGS</h2>
+        <div class="setting-row">
+          <div><strong>GRAPHICS</strong><small>Higher detail uses more battery.</small></div>
+          <div class="segmented" id="qualityControl">
+            <button data-quality="performance">LOW</button>
+            <button data-quality="balanced">BALANCED</button>
+            <button data-quality="high">HIGH</button>
+          </div>
+        </div>
+        <div class="setting-row">
+          <div><strong>HAPTICS</strong><small>Vibrate on doors, warnings and scares.</small></div>
+          <button id="hapticsToggle" class="toggle" role="switch" aria-checked="true"><i></i><span>ON</span></button>
+        </div>
+        <div class="setting-row">
+          <div><strong>SCREEN SHAKE</strong><small>Camera movement during scares.</small></div>
+          <button id="shakeToggle" class="toggle" role="switch" aria-checked="true"><i></i><span>ON</span></button>
+        </div>
+        <div class="setting-row">
+          <div><strong>PROGRESS</strong><small>Reset unlocked nights and settings.</small></div>
+          <button id="resetBtn" class="ghost-btn small">RESET</button>
+        </div>
+        <p class="settings-note">HIGH is tuned for flagship phones such as Pixel 9. The game caps resolution at 2× device pixel ratio.</p>
+        <button class="primary-btn" data-close="settingsModal">DONE</button>
+      </div>
+    </section>
+
+    <div id="rotateNotice" class="rotate-notice hidden" aria-hidden="true">
+      <span>↻</span>
+      <strong>ROTATE FOR THE FULL SHOW</strong>
+      <small>Landscape gives you a wider view of the office.</small>
+    </div>
+  </main>
+
+</body>
+</html>
